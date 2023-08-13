@@ -1,0 +1,17 @@
+x-definitions:
+  app: &app
+    build:
+      context: .
+    depends_on:
+      redis:
+        condition: service_healthy
+
+version: '3.8'
+services:
+  app:
+    <<: *app
+    command: bash
+  redis:
+    image: redis
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]

@@ -1,0 +1,10 @@
+webdriver-manager
+selenium
+opencv-contrib-python
+opencv-contrib-python-headless
+opencv-python
+opencv-python-headless
+numpy
+pytesseract
+Pillow
+matplotlib
