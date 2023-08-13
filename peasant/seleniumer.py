@@ -23,11 +23,11 @@ class FailedOpenBrowser(Exception):
     pass
 
 @contextmanager
-def open_browser(awaited: Seconds = 10) -> Generator[webdriver.Chrome, None, None]:
+def open_browser(awaited: Seconds = Seconds(10)) -> Generator[webdriver.Chrome, None, None]:
     chorme_driver_path = Path(__file__).parent.parent / "docker" / "chromedriver" / settings.DRIVER_VERSION
     chrome_options = headless_options if not settings.DEBUG else Options()
     service = Service(executable_path=chorme_driver_path)
-    driver = MagicMock()
+    driver: webdriver.Chrome = MagicMock()
     try:
         driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.implicitly_wait(awaited)
@@ -45,5 +45,5 @@ class Loginner:
 
     def login(self) -> None:
         
-        with open_browser(debug=self.debug, url=self.url) as driver:
+        with open_browser() as driver:
             logging.info("opened browser")

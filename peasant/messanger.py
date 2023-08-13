@@ -1,4 +1,4 @@
-class Communicator:
+class Messager:
     """
     sending msgs to Discord/Telegram and etc
     """

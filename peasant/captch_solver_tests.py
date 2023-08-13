@@ -29,3 +29,4 @@ def test_captcha(img_num,expected) -> None:
     
     result = captchaSolver(picture_path).run()
     assert result == str(expected)
+

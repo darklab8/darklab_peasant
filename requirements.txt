@@ -8,3 +8,8 @@ pytesseract
 Pillow
 matplotlib
 pytest
+mypy
+celery-types
+types-redis
+types-selenium
+types-Pillow

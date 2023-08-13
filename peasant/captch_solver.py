@@ -16,36 +16,29 @@ Telegram me @Vhektor if you have any question regards to the script!
 
 """
 
-# from selenium import webdriver
-# from selenium.webdriver.common.keys import Keys
-# from selenium.webdriver.chrome.options import Options
-# from selenium.webdriver.common.keys import Keys
-# from webdriver_manager.chrome import ChromeDriverManager
-
-import argparse
-import os
-import time
-import datetime
 import cv2
-import sys
-import os
 import numpy as np
-import pytesseract
+import pytesseract # type: ignore 
 from PIL import Image
-from matplotlib import cm
 import pathlib
+import cv2.typing
+from _typeshed import Incomplete
 
 class RecognitionError(Exception):
     pass
 
+class RecognitionNotStrError(RecognitionError):
+    pass
+
 class captchaSolver:
-    def __init__(self, captcha_filepath):
+    def __init__(self, captcha_filepath: pathlib.Path):
         self.project_path: pathlib.Path = pathlib.Path(__file__).parent.parent
         self.captcha_filepath = captcha_filepath
             
-    def run(self):
+    def run(self) -> str:
         captcha_abs_path = str(self.project_path / self.captcha_filepath)
         img = cv2.imread(captcha_abs_path)
+        breakpoint()
 
         captcha_result = self.bypassCaptcha(img)
 
@@ -64,7 +57,7 @@ class captchaSolver:
 
         return "".join(result_array)
 
-    def bypassCaptcha(self, img):
+    def bypassCaptcha(self, img: Incomplete) -> str:
         out = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
         out = cv2.medianBlur(out,3)
@@ -81,12 +74,20 @@ class captchaSolver:
         im.save(str(self.project_path / "processed.jpeg"))
 
         out_captcha = pytesseract.image_to_string(im)
+
+        if not isinstance(out_captcha, str):
+            raise RecognitionNotStrError()
+
         print(out_captcha)
         return out_captcha
 
-    def bfs(self, visited, queue, array, node):
+    def bfs(self, visited: Incomplete, queue: Incomplete, array: Incomplete, node: Incomplete) -> Incomplete:
+        """
+        Code from https://medium.com/geekculture/bypassing-captcha-with-breadth-first-search-opencv-and-tesseract-8ea374ee1754
+        https://github.com/victorpham1997/Automatic-health-declaration-for-SUTD/tree/master
+        """
         # I make BFS itterative instead of recursive to accomodate my WINDOWS friends >:]
-        def getNeighboor(array, node):
+        def getNeighboor(array: Incomplete, node: Incomplete) -> Incomplete:
             neighboors = []
             if node[0]+1<array.shape[0]:
                 if array[node[0]+1,node[1]] == 0:
@@ -113,13 +114,17 @@ class captchaSolver:
                     visited.add(neighboor)
                     queue.append(neighboor)
             
-    def removeIsland(self, img_arr, threshold):
+    def removeIsland(self, img_arr: Incomplete, threshold: int) -> Incomplete:
+        """
+        Code from https://medium.com/geekculture/bypassing-captcha-with-breadth-first-search-opencv-and-tesseract-8ea374ee1754
+        https://github.com/victorpham1997/Automatic-health-declaration-for-SUTD/tree/master
+        """
         while 0 in img_arr:
             x,y = np.where(img_arr == 0)
             point = (x[0],y[0])
 
-            visited = set()
-            queue = []
+            visited: Incomplete = set()
+            queue: Incomplete = []
 
             self.bfs(visited, queue, img_arr, point)
 

@@ -12,6 +12,6 @@ def info(msg: str) -> None:
     print(f"{datetime.utcnow()}, INFO, {msg=}")
 
 def error(msg: str) -> None:
-    msg = f"{datetime.utcnow()}, INFO, {msg=}"
+    msg = f"{datetime.utcnow()}, ERROR, {msg=}"
     logging.error(msg)
     raise UnhandledError(msg)
