@@ -1,3 +1,6 @@
 class Communicator:
-    def __init__(self):
+    """
+    sending msgs to Discord/Telegram and etc
+    """
+    def __init__(self) -> None:
         pass
