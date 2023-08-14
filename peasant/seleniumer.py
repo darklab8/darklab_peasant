@@ -22,12 +22,16 @@ Seconds = NewType("Seconds", int)
 class FailedOpenBrowser(Exception):
     pass
 
+class ZeroDriver:
+    def quit(self) -> None:
+        pass
+
 @contextmanager
 def open_browser(awaited: Seconds = Seconds(10)) -> Generator[webdriver.Chrome, None, None]:
     chorme_driver_path = Path(__file__).parent.parent / "docker" / "chromedriver" / settings.DRIVER_VERSION
     chrome_options = headless_options if not settings.DEBUG else Options()
     service = Service(executable_path=chorme_driver_path)
-    driver: webdriver.Chrome = MagicMock()
+    driver: webdriver.Chrome | ZeroDriver = ZeroDriver()
     try:
         driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.implicitly_wait(awaited)

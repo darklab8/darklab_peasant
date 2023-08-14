@@ -4,12 +4,12 @@ import pytesseract # type: ignore
 from PIL import Image
 import pathlib
 import cv2.typing
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from unittest.mock import MagicMock
 if TYPE_CHECKING:
     from _typeshed import Incomplete
 else:
-    Incomplete = MagicMock()
+    Incomplete = Any
 
 class RecognitionError(Exception):
     pass
