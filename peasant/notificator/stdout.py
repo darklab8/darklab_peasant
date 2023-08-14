@@ -1,16 +1,24 @@
-from datetime import datetime
 import logging
 from .shared import UnhandledError, Notificator
+from peasant import settings
+
+logging.basicConfig(
+    format='f=%(pathname)s,t=%(asctime)s,l=%(levelname)s,m=%(message)s',
+    encoding='utf-8',
+    level={
+        "DEBUG": logging.DEBUG,
+        "INFO": logging.INFO,
+        "ERROR": logging.ERROR,
+    }[settings.LOG_LEVEL],
+)
 
 class StdoutNotificator(Notificator):
 
     def debug(self, msg: str) -> None:
-        print(f"{datetime.utcnow()}, DEBUG, {msg=}")
+        logging.debug(msg)
 
     def info(self, msg: str) -> None:
-        print(f"{datetime.utcnow()}, INFO, {msg=}")
+        logging.info(msg)
 
     def error(self, msg: str) -> None:
-        msg = f"{datetime.utcnow()}, ERROR, {msg=}"
         logging.error(msg)
-        raise UnhandledError(msg)

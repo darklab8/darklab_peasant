@@ -1,5 +1,10 @@
 from abc import ABCMeta, abstractmethod
+from datetime import datetime
+from peasant import settings
+from pathlib import Path
 
+def format_msg(log_level: settings.LogLevel, msg: str) -> str:
+    return f"f={Path(__file__).name},t={datetime.utcnow()},l={log_level},m={msg}"
 
 class UnhandledError(Exception):
     pass

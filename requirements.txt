@@ -8,6 +8,8 @@ numpy
 pytesseract
 Pillow
 matplotlib
+pydantic
+requests
 
 # dev env
 black
@@ -17,3 +19,4 @@ celery-types
 types-redis
 types-Pillow
 celery[redis]
+types-requests

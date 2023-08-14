@@ -20,7 +20,7 @@ import pathlib
         (12, 206296),
     ],
 )
-def test_captcha(img_num, expected) -> None:
+def test_captcha(img_num: int, expected: int) -> None:
     picture_path = pathlib.Path("data") / f"CodeImage{img_num}.jpeg"
 
     if img_num == 9:

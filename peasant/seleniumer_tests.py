@@ -3,7 +3,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from .seleniumer import Loginner, open_browser
-from . import loggus as logging
 
 
 def test_opening_example():
