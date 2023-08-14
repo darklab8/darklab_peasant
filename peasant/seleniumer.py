@@ -12,23 +12,33 @@ from unittest.mock import MagicMock
 
 headless_options = Options()
 # You comment the next 3 lines to debug if there is any issue
-headless_options.add_argument('--no-sandbox')
-headless_options.add_argument('--headless')
-headless_options.add_argument('--disable-dev-shm-usage')
+headless_options.add_argument("--no-sandbox")
+headless_options.add_argument("--headless")
+headless_options.add_argument("--disable-dev-shm-usage")
 
 Url = NewType("Url", str)
 Seconds = NewType("Seconds", int)
 
+
 class FailedOpenBrowser(Exception):
     pass
+
 
 class ZeroDriver:
     def quit(self) -> None:
         pass
 
+
 @contextmanager
-def open_browser(awaited: Seconds = Seconds(10)) -> Generator[webdriver.Chrome, None, None]:
-    chorme_driver_path = Path(__file__).parent.parent / "docker" / "chromedriver" / settings.DRIVER_VERSION
+def open_browser(
+    awaited: Seconds = Seconds(10),
+) -> Generator[webdriver.Chrome, None, None]:
+    chorme_driver_path = (
+        Path(__file__).parent.parent
+        / "docker"
+        / "chromedriver"
+        / settings.DRIVER_VERSION
+    )
     chrome_options = headless_options if not settings.DEBUG else Options()
     service = Service(executable_path=chorme_driver_path)
     driver: webdriver.Chrome | ZeroDriver = ZeroDriver()
@@ -42,12 +52,12 @@ def open_browser(awaited: Seconds = Seconds(10)) -> Generator[webdriver.Chrome, 
     finally:
         driver.quit()
 
+
 class Loginner:
     def __init__(self, url: Url, debug: bool = False):
         self.debug = debug
         self.url = url
 
     def login(self) -> None:
-        
         with open_browser() as driver:
             logging.info("opened browser")

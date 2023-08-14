@@ -1,3 +1,4 @@
+# working libs
 selenium
 opencv-contrib-python
 opencv-contrib-python-headless
@@ -7,6 +8,9 @@ numpy
 pytesseract
 Pillow
 matplotlib
+
+# dev env
+black
 pytest
 mypy
 celery-types

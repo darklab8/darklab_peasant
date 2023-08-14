@@ -21,20 +21,32 @@ tasks:
     cmds:
       - celery -A peasant.celery flower
   
-  test:pytest:
+  test:unit:
     desc: Run unit tests
     cmds:
       - pytest
 
-  test:mypy:
+  test:types:
     desc: Run static typing checks
     cmds:
       - mypy peasant
 
+  test:format:
+    desc: Run format checks
+    cmds:
+      - task: format
+        vars: { CLI_ARGS: '--check' }
+
+  format:
+    desc: Format code
+    cmds: 
+      - black peasant {{.CLI_ARGS}}
+
   test:
     desc: Run all tests
     cmds:
-      - task: test:mypy
-      - task: test:pytest
+      - task: test:types
+      - task: test:unit
+      - task: test:format
 
   
