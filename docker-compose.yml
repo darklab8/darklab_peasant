@@ -5,13 +5,26 @@ x-definitions:
     depends_on:
       redis:
         condition: service_healthy
+    environment:
+      PEASANT_REDIS_HOST: 'redis://redis:6379/0'
+      CELERY_LOGLEVEL: DEBUG
 
 version: '3.8'
 services:
-  app:
-    <<: *app
-    command: bash
   redis:
     image: redis
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+
+  # pretty much main application in result.
+  app:
+    <<: *app
+    command: task celery:app -- -l debug
+  flower:
+    <<: *app
+    command: task celery:monitoring
+
+  # dev env
+  shell:
+    <<: *app
+    command: bash

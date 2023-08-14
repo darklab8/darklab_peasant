@@ -4,3 +4,4 @@ __pycache__/
 processed.jpeg
 script_example.py
 .env.json
+celerybeat-schedule

@@ -7,6 +7,8 @@ RUN apt update && apt install -y ./chrome.deb
 
 RUN apt install tesseract-ocr -y
 
+RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+
 COPY requirements.txt constraints.txt ./
 RUN pip install -r requirements.txt -c constraints.txt
 
@@ -17,3 +19,5 @@ COPY pytest.ini ./
 
 RUN mkdir -p docker/chromedriver
 COPY docker/chromedriver/114.0.5735.90 docker/chromedriver/114.0.5735.90
+
+CMD [ "task celery:app" ]
