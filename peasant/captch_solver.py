@@ -1,28 +1,15 @@
-# -*- coding: utf-8 -*-
-"""
-Created on 11/03/2021
-Last edit on 11/03/2021
-version 3
-
-@author: T.Vic
-note:	
-This version can bypass the captcha by utilising cv2 filters, BFS and pytesseract OCR. The script will attempt to make a number of attempts to inference the captcha and log in with the provided username and password. The number of try depends on your luck, the average number of try I got is usually around 10. 
-
-Chrome driver will be automatically downloaded
-
-For SUTD account username and password, you can either hardcode inside the script or parse it as arguments to the script. Please ensure they are correct!
-
-Telegram me @Vhektor if you have any question regards to the script!
-
-"""
-
 import cv2
 import numpy as np
 import pytesseract # type: ignore 
 from PIL import Image
 import pathlib
 import cv2.typing
-from _typeshed import Incomplete
+from typing import TYPE_CHECKING
+from unittest.mock import MagicMock
+if TYPE_CHECKING:
+    from _typeshed import Incomplete
+else:
+    Incomplete = MagicMock()
 
 class RecognitionError(Exception):
     pass
@@ -37,8 +24,7 @@ class captchaSolver:
             
     def run(self) -> str:
         captcha_abs_path = str(self.project_path / self.captcha_filepath)
-        img = cv2.imread(captcha_abs_path)
-        breakpoint()
+        img: np.ndarray = cv2.imread(captcha_abs_path)
 
         captcha_result = self.bypassCaptcha(img)
 
@@ -57,7 +43,7 @@ class captchaSolver:
 
         return "".join(result_array)
 
-    def bypassCaptcha(self, img: Incomplete) -> str:
+    def bypassCaptcha(self, img: np.ndarray) -> str:
         out = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
         out = cv2.medianBlur(out,3)

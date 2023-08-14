@@ -3,3 +3,4 @@ __pycache__/
 .pytest_cache/
 processed.jpeg
 script_example.py
+.env.json
