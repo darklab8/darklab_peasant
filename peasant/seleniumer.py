@@ -5,10 +5,9 @@ from selenium.webdriver.chrome.service import Service
 from contextlib import contextmanager
 from typing import NewType
 from pathlib import Path
-from . import loggus as logging
 from typing import Generator
 from . import settings
-from unittest.mock import MagicMock
+from .notificator import logger
 
 headless_options = Options()
 # You comment the next 3 lines to debug if there is any issue
@@ -45,7 +44,7 @@ def open_browser(
     try:
         driver = webdriver.Chrome(service=service, options=chrome_options)
         driver.implicitly_wait(awaited)
-        logging.info("opened browser")
+        logger.debug("opened browser")
         yield driver
     except Exception as err:
         raise FailedOpenBrowser() from err
@@ -60,4 +59,4 @@ class Loginner:
 
     def login(self) -> None:
         with open_browser() as driver:
-            logging.info("opened browser")
+            logger.debug("opened browser")

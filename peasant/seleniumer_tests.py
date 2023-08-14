@@ -18,3 +18,7 @@ def test_opening_example():
         body = driver.find_element(By.CSS_SELECTOR, "body")
 
         assert "As described in RFC 2606" in body.text
+
+
+def test_check_queue():
+    pass
