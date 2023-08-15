@@ -1,6 +1,6 @@
 import logging
-from .shared import UnhandledError, Notificator, PanicException
-from peasant import settings
+from .shared import Notificator, PanicException
+from peasant import settings, types
 
 logging.basicConfig(
     format="f=%(pathname)s,t=%(asctime)s,l=%(levelname)s,m=%(message)s",
@@ -20,9 +20,12 @@ class StdoutNotificator(Notificator):
     def info(self, msg: str) -> None:
         logging.info(msg)
 
-    def panic(self, msg: str, exc: Exception | None = None) -> None:
+    def error(self, msg: str) -> None:
         logging.error(msg)
-        if exc is None:
-            raise PanicException(msg)
-        raise PanicException(msg) from exc
+
+    def panic(self, msg: str, from_exc: Exception | None = None, error_cls: types.ExcType = PanicException) -> None:
+        logging.error(msg)
+        if from_exc is None:
+            raise error_cls(msg)
+        raise error_cls(msg) from from_exc
 

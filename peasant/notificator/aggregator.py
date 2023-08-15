@@ -3,6 +3,7 @@ from .stdout import StdoutNotificator
 from .telegram import TelegramNotificator
 from .discord import DiscordNotificator
 from contextlib import suppress
+from peasant import types
 
 class NotificatorAggregator(Notificator):
     """
@@ -23,14 +24,14 @@ class NotificatorAggregator(Notificator):
         for notificator in self._notificators:
             notificator.info(msg)
 
-    def panic(self, msg: str, exc: Exception | None = None) -> None:
+    def panic(self, msg: str, from_exc: Exception | None = None, error_cls: types.ExcType = PanicException) -> None:
         
         for notificator in self._notificators:
             with suppress(PanicException):
                 notificator.panic(msg)
-        if exc is None:
-            raise PanicException(msg)
-        raise PanicException(msg) from exc
+        if from_exc is None:
+            raise error_cls(msg)
+        raise error_cls(msg) from from_exc
 
         
 

@@ -29,6 +29,7 @@ class LogLev:
     DEBUG = types.LogLevel("DEBUG")
     INFO = types.LogLevel("INFO")
     ERROR = types.LogLevel("ERROR")
+    PANIC = types.LogLevel("PANIC")
 
 
 LOG_LEVEL = cfg.get_str("log_level", LogLev.DEBUG)

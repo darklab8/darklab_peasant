@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from datetime import datetime
-from peasant import settings, types
+from peasant import types
 from pathlib import Path
 import inspect
 from typing import Optional
@@ -39,7 +39,7 @@ class Notificator(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def panic(self, msg: str, exc: Optional[Exception] = None) -> None:
+    def panic(self, msg: str, from_exc: Optional[Exception] = None, error_cls: types.ExcType = PanicException) -> None:
         """
         Critical problems.
         """

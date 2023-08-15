@@ -1,4 +1,4 @@
-from typing import NewType
+from typing import NewType, Type
 
 DiscordWebhookUrl = NewType("DiscordWebhookUrl", str)
 TelegramChannelID = NewType("TelegramChannelID", str)
@@ -9,3 +9,5 @@ LogLevel = NewType("LogLevel", str)
 SeleniumLink = NewType("SeleniumLink", str)
 GovRegistryLink = NewType("GovRegistryLink", SeleniumLink)
 Seconds = NewType("Seconds", int)
+
+ExcType = Type[Exception]

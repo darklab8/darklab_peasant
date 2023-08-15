@@ -3,7 +3,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from contextlib import contextmanager
-from typing import NewType
 from pathlib import Path
 from typing import Generator
 from . import settings
@@ -13,6 +12,7 @@ from .notificator import logger
 import selenium.common.exceptions
 from selenium.webdriver.remote.webelement import WebElement
 from . import types
+from . import exceptions
 
 headless_options = Options()
 # You comment the next 3 lines to debug if there is any issue
@@ -20,11 +20,11 @@ headless_options.add_argument("--no-sandbox")
 headless_options.add_argument("--headless")
 headless_options.add_argument("--disable-dev-shm-usage")
 
-class FailedOpenBrowser(Exception):
+class FailedOpenBrowser(exceptions.PeasantException):
     pass
 
 
-class FailedLogin(Exception):
+class FailedLogin(exceptions.PeasantException):
     pass
 
 class ZeroDriver:
@@ -61,7 +61,7 @@ def find_element(driver: webdriver.Chrome, selector: str) -> WebElement:
         driver.implicitly_wait(types.Seconds(1))
         elem = driver.find_element(By.CSS_SELECTOR, selector)
     except selenium.common.exceptions.NoSuchElementException:
-        logger.panic(f"not found expected element by {selector=}")
+        logger.panic(f"not found expected element by {selector=}", error_cls=FailedLogin)
     finally:
         driver.implicitly_wait(settings.SELENIUM_AWAIT_TIME)
 
@@ -75,7 +75,7 @@ class Loginner:
         try:
             self._login()
         except Exception as exc:
-            logger.panic(str(exc),exc=exc)
+            logger.panic(str(exc),from_exc=exc)
 
     def _login(self) -> None:
         with open_browser() as driver:
@@ -85,13 +85,13 @@ class Loginner:
             first_page_body = find_element(driver, "body")
 
             if "Введите символы с картинки" not in first_page_body.text:
-                logger.panic(f"expected to find 'Введите симолы с картинки'. Found {first_page_body.text=}")
+                logger.panic(f"expected to find 'Введите симолы с картинки'. Found {first_page_body.text=}", error_cls=FailedLogin)
             
             picture = find_element(driver, "#ctl00_MainContent_imgSecNum")
             captcha_src = picture.get_attribute("src")
 
             if captcha_src is None:
-                logger.panic("Expected to find src attribute in captcha element")
+                logger.panic("Expected to find src attribute in captcha element", error_cls=FailedLogin)
 
             captcha_path = Path(__file__).parent / f"{secrets.token_hex(4)}.captcha"
 
@@ -112,7 +112,7 @@ class Loginner:
             # ====================== Second page =======================
             body_elem = find_element(driver, "body")
             if "Для проверки наличия свободного времени" not in body_elem.text:
-                logger.panic(f"expected to find 'Для проверки наличия свободного времени' at second page, found {body_elem.text=}")
+                logger.panic(f"expected to find 'Для проверки наличия свободного времени' at second page, found {body_elem.text=}", error_cls=FailedLogin)
 
             button_elem = find_element(driver, "#ctl00_MainContent_ButtonB")
             button_elem.click()

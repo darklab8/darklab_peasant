@@ -1,0 +1,2 @@
+class PeasantException(Exception):
+    pass
