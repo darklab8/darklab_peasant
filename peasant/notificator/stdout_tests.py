@@ -1,6 +1,7 @@
 from .stdout import StdoutNotificator
 import logging
-
+import pytest
+from .shared import PanicException
 
 def test_loggus(caplog) -> None:  # type: ignore
     caplog.set_level(logging.DEBUG)
@@ -9,4 +10,5 @@ def test_loggus(caplog) -> None:  # type: ignore
 
     notif.debug("debugging msg")
     notif.info("Good news, everyone!")
-    notif.error("smth bad happened!")
+    with pytest.raises(PanicException):
+        notif.panic("smth bad happened!")

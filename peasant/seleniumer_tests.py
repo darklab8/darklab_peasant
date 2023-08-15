@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from .seleniumer import Loginner, open_browser
 import pytest
 import os
+from . import settings
 
 
 def test_opening_example():
@@ -28,5 +29,5 @@ def test_opening_example():
 )
 @pytest.mark.allow_visual_debug_only
 def test_check_queue():
-    with open_browser() as driver:
-        print(123)
+    Loginner(url=settings.SELENIUM_REG_LINK).login()
+

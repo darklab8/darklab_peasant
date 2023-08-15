@@ -1,5 +1,5 @@
 import logging
-from .shared import UnhandledError, Notificator
+from .shared import UnhandledError, Notificator, PanicException
 from peasant import settings
 
 logging.basicConfig(
@@ -20,5 +20,7 @@ class StdoutNotificator(Notificator):
     def info(self, msg: str) -> None:
         logging.info(msg)
 
-    def error(self, msg: str) -> None:
+    def panic(self, msg: str) -> None:
         logging.error(msg)
+        raise PanicException(msg)
+

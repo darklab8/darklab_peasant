@@ -1,4 +1,4 @@
-from .shared import Notificator, UnhandledError, format_msg
+from .shared import Notificator, UnhandledError, format_msg, PanicException
 from peasant import settings
 import requests
 from .stdout import StdoutNotificator
@@ -24,7 +24,8 @@ class DiscordNotificator(Notificator):
     def info(self, msg: str) -> None:
         send_msg(settings.DISCORD_CHANNEL_NEWS, format_msg(settings.LogLev.INFO, msg))
 
-    def error(self, msg: str) -> None:
+    def panic(self, msg: str) -> None:
         send_msg(
             settings.DISCORD_CHANNEL_HEALTH, format_msg(settings.LogLev.ERROR, msg)
         )
+        raise PanicException(msg)

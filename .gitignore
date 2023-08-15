@@ -5,3 +5,4 @@ processed.jpeg
 script_example.py
 .env.json
 celerybeat-schedule
+*.captcha

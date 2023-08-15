@@ -1,4 +1,4 @@
-from .shared import Notificator, format_msg
+from .shared import Notificator, format_msg, PanicException
 from peasant import settings, types
 from typing import Any
 import requests
@@ -28,8 +28,9 @@ class TelegramNotificator(Notificator):
             format_msg(log_level=settings.LogLev.INFO, msg=msg),
         )
 
-    def error(self, msg: str) -> None:
+    def panic(self, msg: str) -> None:
         send_msg(
             settings.TELEGRAM_CHANNEL_HEALTH,
             format_msg(log_level=settings.LogLev.ERROR, msg=msg),
         )
+        raise PanicException(msg)

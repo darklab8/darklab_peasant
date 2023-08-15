@@ -62,3 +62,15 @@ class Config:
             raise ConfigException()
 
         return result
+    
+    def get_int(self, key: str, default: Optional[str] = None) -> int:
+        result = self.get(key, default)
+
+        if isinstance(result, int):
+            return result
+
+        if not isinstance(result, str):
+            raise ConfigException()
+        
+        return int(result)
+    

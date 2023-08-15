@@ -20,6 +20,8 @@ def format_msg(log_level: types.LogLevel, msg: str) -> str:
 class UnhandledError(Exception):
     pass
 
+class PanicException(Exception):
+    pass
 
 class Notificator(metaclass=ABCMeta):
     @abstractmethod
@@ -36,7 +38,7 @@ class Notificator(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def error(self, msg: str) -> None:
+    def panic(self, msg: str) -> None:
         """
         Critical problems.
         """

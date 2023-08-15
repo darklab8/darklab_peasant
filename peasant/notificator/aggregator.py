@@ -1,8 +1,8 @@
-from .shared import Notificator
+from .shared import Notificator, PanicException
 from .stdout import StdoutNotificator
 from .telegram import TelegramNotificator
 from .discord import DiscordNotificator
-
+from contextlib import suppress
 
 class NotificatorAggregator(Notificator):
     """
@@ -21,8 +21,14 @@ class NotificatorAggregator(Notificator):
 
     def info(self, msg: str) -> None:
         for notificator in self._notificators:
-            notificator.debug(msg)
+            notificator.info(msg)
 
-    def error(self, msg: str) -> None:
+    def panic(self, msg: str) -> None:
+        
         for notificator in self._notificators:
-            notificator.debug(msg)
+            with suppress(PanicException):
+                notificator.panic(msg)
+        raise PanicException(msg)
+
+        
+

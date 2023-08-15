@@ -33,6 +33,7 @@ class LogLev:
 
 LOG_LEVEL = cfg.get_str("log_level", LogLev.DEBUG)
 
-SELENIUM_REG_LINK_1 = types.GovRegistryLink(
-    types.SeleniumLink(cfg.get_str("selenium_reg_link_1"))
+SELENIUM_REG_LINK = types.GovRegistryLink(
+    types.SeleniumLink(cfg.get_str("selenium_reg_link"))
 )
+SELENIUM_AWAIT_TIME = types.Seconds(cfg.get_int("selenium_await_time", "30"))
