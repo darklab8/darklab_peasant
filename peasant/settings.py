@@ -23,3 +23,5 @@ class LogLev:
     ERROR = types.LogLevel("ERROR")
 
 LOG_LEVEL = cfg.get_str("log_level", LogLev.DEBUG)
+
+SELENIUM_REG_LINK_1 = types.GovRegistryLink(types.SeleniumLink(cfg.get_str("selenium_reg_link_1")))

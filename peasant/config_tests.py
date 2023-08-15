@@ -1,6 +1,7 @@
 from . import config
 import json
 import os
+import pytest
 
 
 def test_config_not_exists():
@@ -25,8 +26,11 @@ def test_json_config_exists():
 
         assert cfg.get_bool("debug") == True
         assert cfg.get_str("random_str") == "abc"
-        assert cfg.get_str("rnd_str") == ""
-        assert cfg.get_bool("debug2") == None
+
+        with pytest.raises(config.NotFoundValueAndNotDefinedDefault):
+            assert cfg.get_str("rnd_str") == ""
+        with pytest.raises(config.NotFoundValueAndNotDefinedDefault):
+            assert cfg.get_bool("debug2") == None
     finally:
         os.remove(str(config.env_path))
 
@@ -35,4 +39,5 @@ def test_config_grab_env_vars():
     cfg = config.Config()
     os.environ["PEASANT_DEBUG"] = "true"
     assert cfg.get_bool("debug") == True
-    assert cfg.get_bool("debug2") == None
+    with pytest.raises(config.NotFoundValueAndNotDefinedDefault):
+        assert cfg.get_bool("debug2") == None

@@ -13,8 +13,13 @@ env_path = project_path / ".env.json"
 class ConfigException(Exception):
     pass
 
+class NotFoundValueAndNotDefinedDefault(ConfigException):
+    pass
 
 class Config:
+    """
+    Default must be defined when requesting value. Otherwise if None is found, it will yield ConfigException
+    """
     EnvTrue: EnvVar = EnvVar("true")
     Prefix = "PEASANT_"
 
@@ -31,6 +36,9 @@ class Config:
         with suppress(KeyError):
             return self.file_config[full_key]
 
+        if full_key not in os.environ and default is None:
+            raise NotFoundValueAndNotDefinedDefault()
+
         return os.environ.get(full_key, default)
 
     def get_bool(self, key: str, default: Optional[bool] = None) -> Optional[bool]:
@@ -44,7 +52,7 @@ class Config:
 
         return default
 
-    def get_str(self, key: str, default: str = "") -> str:
+    def get_str(self, key: str, default: Optional[str] = None) -> str:
         result = self.get(key, default)
 
         if not isinstance(result, str):
