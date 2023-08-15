@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Pytest",
+            "type": "python",
+            "request": "launch",
+            "module": "pytest",
+            "console": "integratedTerminal",
+            "purpose": ["debug-test"],
+            "env": {
+                "ENV_VAR": "someval",
+                "PYTEST_ALLOW_VISUAL_DEBUG_ONLY": "true"
+            }
+        }
+    ]
+}
+  
