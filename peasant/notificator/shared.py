@@ -2,9 +2,19 @@ from abc import ABCMeta, abstractmethod
 from datetime import datetime
 from peasant import settings, types
 from pathlib import Path
+import inspect
+
 
 def format_msg(log_level: types.LogLevel, msg: str) -> str:
-    return f"f={Path(__file__).name},t={datetime.utcnow()},l={log_level},m={msg}"
+    filenames = list([calling_file.filename for calling_file in inspect.stack()])
+    caller_path = "undefined"
+
+    for filename in reversed(filenames):
+        if "/peasant/" in filename and "tests" not in filename:
+            caller_path = filename
+            break
+
+    return f"f={Path(caller_path).name},t={datetime.utcnow()},l={log_level},m={msg}"
 
 class UnhandledError(Exception):
     pass

@@ -1,4 +1,4 @@
-from .shared import Notificator, format_msg, UnhandledError
+from .shared import Notificator, UnhandledError, format_msg
 from peasant import settings
 import requests
 from .stdout import StdoutNotificator
