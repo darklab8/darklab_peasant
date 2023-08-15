@@ -13,13 +13,16 @@ env_path = project_path / ".env.json"
 class ConfigException(Exception):
     pass
 
+
 class NotFoundValueAndNotDefinedDefault(ConfigException):
     pass
+
 
 class Config:
     """
     Default must be defined when requesting value. Otherwise if None is found, it will yield ConfigException
     """
+
     EnvTrue: EnvVar = EnvVar("true")
     Prefix = "PEASANT_"
 

@@ -18,8 +18,10 @@ ExpiresInSeconds = NewType("ExpiresInSeconds", int)
 PeriodInSeconds = NewType("PeriodInSeconds", float)
 default_expires: ExpiresInSeconds = ExpiresInSeconds(60)
 
+
 class ScheduledOptions(BaseModel):
     expires: ExpiresInSeconds = default_expires
+
 
 class ScheduledTask(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -28,27 +30,32 @@ class ScheduledTask(BaseModel):
     args: tuple
     options: ScheduledOptions = Field(default_factory=ScheduledOptions)
 
+
 scheduled_tasks = (
     ScheduledTask(
-        task = 'peasant.celery.add',
-        schedule = PeriodInSeconds(30.0),
-        args = (16, 16),
+        task="peasant.celery.add",
+        schedule=PeriodInSeconds(30.0),
+        args=(16, 16),
     ),
     ScheduledTask(
-        task = 'peasant.celery.add',
-        schedule = crontab(hour=7, minute=30, day_of_week=1),
-        args = (32, 32),
+        task="peasant.celery.add",
+        schedule=crontab(hour=7, minute=30, day_of_week=1),
+        args=(32, 32),
     ),
 )
 
-app.conf.beat_schedule = dict({repr(task): task.model_dump() for task in scheduled_tasks})
+app.conf.beat_schedule = dict(
+    {repr(task): task.model_dump() for task in scheduled_tasks}
+)
 
 from celery.signals import after_task_publish
 
+
 @beat_init.connect
-def auto_purger(sender=None, headers=None, body=None, **kwargs): # type: ignore
+def auto_purger(sender=None, headers=None, body=None, **kwargs):  # type: ignore
     app.control.purge()
     print("purged tasks")
+
 
 @app.task
 def add(x: int, y: int) -> int:

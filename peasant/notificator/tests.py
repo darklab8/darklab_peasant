@@ -6,6 +6,7 @@ from .shared import Notificator
 from typing import Type
 import logging
 
+
 @pytest.mark.parametrize(
     "notificator_cls",
     [

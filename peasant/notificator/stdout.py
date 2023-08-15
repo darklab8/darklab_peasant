@@ -3,8 +3,8 @@ from .shared import UnhandledError, Notificator
 from peasant import settings
 
 logging.basicConfig(
-    format='f=%(pathname)s,t=%(asctime)s,l=%(levelname)s,m=%(message)s',
-    encoding='utf-8',
+    format="f=%(pathname)s,t=%(asctime)s,l=%(levelname)s,m=%(message)s",
+    encoding="utf-8",
     level={
         "DEBUG": logging.DEBUG,
         "INFO": logging.INFO,
@@ -12,8 +12,8 @@ logging.basicConfig(
     }[settings.LOG_LEVEL],
 )
 
-class StdoutNotificator(Notificator):
 
+class StdoutNotificator(Notificator):
     def debug(self, msg: str) -> None:
         logging.debug(msg)
 
