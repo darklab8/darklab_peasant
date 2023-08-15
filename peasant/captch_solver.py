@@ -5,7 +5,6 @@ from PIL import Image
 import pathlib
 import cv2.typing
 from typing import TYPE_CHECKING, Any
-from unittest.mock import MagicMock
 
 if TYPE_CHECKING:
     from _typeshed import Incomplete
