@@ -2,10 +2,11 @@ from .shared import Notificator, format_msg, UnhandledError
 from peasant import settings
 import requests
 from .stdout import StdoutNotificator
+from peasant import types
 
 logger = StdoutNotificator()
 
-def send_msg(webhook: settings.DiscordWebhookUrl, msg: str) -> None:
+def send_msg(webhook: types.DiscordWebhookUrl, msg: str) -> None:
     resp = requests.post(url=webhook,json=dict(content=msg))
     
 

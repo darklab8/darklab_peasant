@@ -1,12 +1,12 @@
 from .shared import Notificator, format_msg
-from peasant import settings
+from peasant import settings, types
 from typing import Any
 import requests
 from .stdout import StdoutNotificator
 
 logger = StdoutNotificator()
 
-def send_msg(channel_id: settings.TelegramChannelID, bot_message: str) -> Any:
+def send_msg(channel_id: types.TelegramChannelID, bot_message: str) -> Any:
     url = f'https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage'
     params=dict(
         chat_id=channel_id,
