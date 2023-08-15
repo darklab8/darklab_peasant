@@ -13,6 +13,7 @@ import selenium.common.exceptions
 from selenium.webdriver.remote.webelement import WebElement
 from . import types
 from . import exceptions
+import os
 
 headless_options = Options()
 # You comment the next 3 lines to debug if there is any issue
@@ -99,6 +100,7 @@ class Loginner:
                 file.write(picture.screenshot_as_png)
 
             captcha_result = captch_solver.captchaSolver(captcha_path).run()
+            os.remove(captcha_path)
 
             input_elem = find_element(driver, "#ctl00_MainContent_txtCode")
             
@@ -111,6 +113,9 @@ class Loginner:
 
             # ====================== Second page =======================
             body_elem = find_element(driver, "body")
+            if "Символы с картинки введены не правильно. Пожалуйста, повторите попытку" in body_elem.text:
+                logger.panic(f"Символы с картинки введены не правильно. Пожалуйста, повторите попытку", error_cls=FailedLogin)
+
             if "Для проверки наличия свободного времени" not in body_elem.text:
                 logger.panic(f"expected to find 'Для проверки наличия свободного времени' at second page, found {body_elem.text=}", error_cls=FailedLogin)
 
