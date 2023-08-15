@@ -28,9 +28,9 @@ def test_json_config_exists():
         assert cfg.get_str("random_str") == "abc"
 
         with pytest.raises(config.NotFoundValueAndNotDefinedDefault):
-            assert cfg.get_str("rnd_str") == ""
+            cfg.get_str("rnd_str")
         with pytest.raises(config.NotFoundValueAndNotDefinedDefault):
-            assert cfg.get_bool("debug2") == None
+            cfg.get_bool("debug2")
     finally:
         os.remove(str(config.env_path))
 
