@@ -23,12 +23,14 @@ class NotificatorAggregator(Notificator):
         for notificator in self._notificators:
             notificator.info(msg)
 
-    def panic(self, msg: str) -> None:
+    def panic(self, msg: str, exc: Exception | None = None) -> None:
         
         for notificator in self._notificators:
             with suppress(PanicException):
                 notificator.panic(msg)
-        raise PanicException(msg)
+        if exc is None:
+            raise PanicException(msg)
+        raise PanicException(msg) from exc
 
         
 

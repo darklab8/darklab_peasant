@@ -3,6 +3,7 @@ from datetime import datetime
 from peasant import settings, types
 from pathlib import Path
 import inspect
+from typing import Optional
 
 
 def format_msg(log_level: types.LogLevel, msg: str) -> str:
@@ -38,7 +39,7 @@ class Notificator(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def panic(self, msg: str) -> None:
+    def panic(self, msg: str, exc: Optional[Exception] = None) -> None:
         """
         Critical problems.
         """

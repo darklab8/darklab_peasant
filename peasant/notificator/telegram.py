@@ -28,9 +28,11 @@ class TelegramNotificator(Notificator):
             format_msg(log_level=settings.LogLev.INFO, msg=msg),
         )
 
-    def panic(self, msg: str) -> None:
+    def panic(self, msg: str, exc: Exception | None = None) -> None:
         send_msg(
             settings.TELEGRAM_CHANNEL_HEALTH,
             format_msg(log_level=settings.LogLev.ERROR, msg=msg),
         )
-        raise PanicException(msg)
+        if exc is None:
+            raise PanicException(msg)
+        raise PanicException(msg) from exc

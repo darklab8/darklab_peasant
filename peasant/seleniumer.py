@@ -20,9 +20,6 @@ headless_options.add_argument("--no-sandbox")
 headless_options.add_argument("--headless")
 headless_options.add_argument("--disable-dev-shm-usage")
 
-Url = NewType("Url", str)
-
-
 class FailedOpenBrowser(Exception):
     pass
 
@@ -61,7 +58,7 @@ def open_browser(
 
 def find_element(driver: webdriver.Chrome, selector: str) -> WebElement:
     try:
-        driver.implicitly_wait(0)
+        driver.implicitly_wait(types.Seconds(1))
         elem = driver.find_element(By.CSS_SELECTOR, selector)
     except selenium.common.exceptions.NoSuchElementException:
         logger.panic(f"not found expected element by {selector=}")
@@ -71,10 +68,16 @@ def find_element(driver: webdriver.Chrome, selector: str) -> WebElement:
     return elem
 
 class Loginner:
-    def __init__(self, url: Url):
+    def __init__(self, url: types.GovRegistryLink):
         self.url = url
 
     def login(self) -> None:
+        try:
+            self._login()
+        except Exception as exc:
+            logger.panic(str(exc),exc=exc)
+
+    def _login(self) -> None:
         with open_browser() as driver:
             driver.get(self.url)
 

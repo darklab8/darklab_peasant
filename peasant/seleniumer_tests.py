@@ -6,9 +6,11 @@ from .seleniumer import Loginner, open_browser
 import pytest
 import os
 from . import settings
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from . import types
 
-
-def test_opening_example():
+def test_opening_example() -> None:
     with open_browser() as driver:
         driver.get("https://example.com/")
         assert "Example Domain" in driver.title
@@ -28,6 +30,5 @@ def test_opening_example():
     reason="You get banned if u ran this more than 24 times per day",
 )
 @pytest.mark.allow_visual_debug_only
-def test_check_queue():
+def test_check_queue() -> None:
     Loginner(url=settings.SELENIUM_REG_LINK).login()
-
