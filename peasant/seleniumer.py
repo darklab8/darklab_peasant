@@ -83,39 +83,45 @@ class Loginner:
             driver.get(self.url)
 
             # ====================== First page =======================
-            first_page_body = find_element(driver, "body")
+            for _ in range(settings.SELENIUM_ATTEMPTS_SOLVING_CATPCHA):
+                first_page_body = find_element(driver, "body")
 
-            if "Введите символы с картинки" not in first_page_body.text:
-                logger.panic(f"expected to find 'Введите симолы с картинки'. Found {first_page_body.text=}", error_cls=FailedLogin)
-            
-            picture = find_element(driver, "#ctl00_MainContent_imgSecNum")
-            captcha_src = picture.get_attribute("src")
+                if "Введите символы с картинки" not in first_page_body.text:
+                    logger.panic(f"expected to find 'Введите симолы с картинки'. Found {first_page_body.text=}", error_cls=FailedLogin)
+                
+                picture = find_element(driver, "#ctl00_MainContent_imgSecNum")
+                captcha_src = picture.get_attribute("src")
 
-            if captcha_src is None:
-                logger.panic("Expected to find src attribute in captcha element", error_cls=FailedLogin)
+                if captcha_src is None:
+                    logger.panic("Expected to find src attribute in captcha element", error_cls=FailedLogin)
 
-            captcha_path = Path(__file__).parent / f"{secrets.token_hex(4)}.captcha"
+                captcha_path = Path(__file__).parent / f"{secrets.token_hex(4)}.captcha"
+                with open(captcha_path, 'wb') as file:
+                    file.write(picture.screenshot_as_png)
 
-            with open(captcha_path, 'wb') as file:
-                file.write(picture.screenshot_as_png)
+                captcha_result = captch_solver.captchaSolver(captcha_path).run()
+                os.remove(captcha_path)
 
-            captcha_result = captch_solver.captchaSolver(captcha_path).run()
-            os.remove(captcha_path)
+                input_elem = find_element(driver, "#ctl00_MainContent_txtCode")
+                
+                input_elem.clear()
+                input_elem.send_keys(captcha_result)
 
-            input_elem = find_element(driver, "#ctl00_MainContent_txtCode")
-            
-            input_elem.clear()
-            input_elem.send_keys(captcha_result)
+                button_elem = find_element(driver, "#ctl00_MainContent_ButtonA")
+                
+                button_elem.click()
 
-            button_elem = find_element(driver, "#ctl00_MainContent_ButtonA")
-            
-            button_elem.click()
+                body_elem = find_element(driver, "body")
+                if "Символы с картинки введены не правильно. Пожалуйста, повторите попытку" not in body_elem.text:
+                    break
+            else:
+                logger.panic(
+                    f"Символы с картинки введены не правильно. Пожалуйста, повторите попытку, "
+                    f"failed {settings.SELENIUM_ATTEMPTS_SOLVING_CATPCHA} times", error_cls=FailedLogin
+                )
 
             # ====================== Second page =======================
             body_elem = find_element(driver, "body")
-            if "Символы с картинки введены не правильно. Пожалуйста, повторите попытку" in body_elem.text:
-                logger.panic(f"Символы с картинки введены не правильно. Пожалуйста, повторите попытку", error_cls=FailedLogin)
-
             if "Для проверки наличия свободного времени" not in body_elem.text:
                 logger.panic(f"expected to find 'Для проверки наличия свободного времени' at second page, found {body_elem.text=}", error_cls=FailedLogin)
 
