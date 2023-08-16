@@ -1,12 +1,9 @@
-from .stdout import StdoutNotificator
-import logging
+from .telegram import TelegramNotificator
 import pytest
 from peasant import exceptions
 
-def test_loggus(caplog) -> None:  # type: ignore
-    caplog.set_level(logging.DEBUG)
-
-    notif = StdoutNotificator()
+def test_telegram() -> None:
+    notif = TelegramNotificator()
 
     notif.debug("debugging msg")
     notif.info("Good news, everyone!")

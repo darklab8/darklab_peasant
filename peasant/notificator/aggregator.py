@@ -1,9 +1,9 @@
-from .shared import Notificator, PanicException
+from .shared import Notificator
 from .stdout import StdoutNotificator
 from .telegram import TelegramNotificator
 from .discord import DiscordNotificator
 from contextlib import suppress
-from peasant import types
+from peasant import types, exceptions
 
 class NotificatorAggregator(Notificator):
     """
@@ -24,10 +24,10 @@ class NotificatorAggregator(Notificator):
         for notificator in self._notificators:
             notificator.info(msg)
 
-    def panic(self, msg: str, from_exc: Exception | None = None, error_cls: types.ExcType = PanicException) -> None:
+    def panic(self, msg: str, from_exc: Exception | None = None, error_cls: types.ExcType = exceptions.PanicException) -> None:
         
         for notificator in self._notificators:
-            with suppress(PanicException):
+            with suppress(exceptions.PanicException):
                 notificator.panic(msg)
         if from_exc is None:
             raise error_cls(msg)

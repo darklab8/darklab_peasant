@@ -4,6 +4,7 @@ from peasant import types
 from pathlib import Path
 import inspect
 from typing import Optional
+from peasant import exceptions
 
 
 def format_msg(log_level: types.LogLevel, msg: str) -> str:
@@ -21,9 +22,6 @@ def format_msg(log_level: types.LogLevel, msg: str) -> str:
 class UnhandledError(Exception):
     pass
 
-class PanicException(Exception):
-    pass
-
 class Notificator(metaclass=ABCMeta):
     @abstractmethod
     def debug(self, msg: str) -> None:
@@ -39,7 +37,7 @@ class Notificator(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def panic(self, msg: str, from_exc: Optional[Exception] = None, error_cls: types.ExcType = PanicException) -> None:
+    def panic(self, msg: str, from_exc: Optional[Exception] = None, error_cls: types.ExcType = exceptions.PanicException) -> None:
         """
         Critical problems.
         """
