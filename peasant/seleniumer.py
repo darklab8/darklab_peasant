@@ -83,11 +83,13 @@ class Loginner:
             driver.get(self.url)
 
             # ====================== First page =======================
+            text_asking_to_solve_captcha = "Введите символы с картинки"
+            text_telling_captcha_was_answered_incorrectly = "Символы с картинки введены не правильно. Пожалуйста, повторите попытку"
             for _ in range(settings.SELENIUM_ATTEMPTS_SOLVING_CATPCHA):
                 first_page_body = find_element(driver, "body")
 
-                if "Введите символы с картинки" not in first_page_body.text:
-                    logger.panic(f"expected to find 'Введите симолы с картинки'. Found {first_page_body.text=}", error_cls=FailedLogin)
+                if text_asking_to_solve_captcha not in first_page_body.text:
+                    logger.panic(f"expected to find '{text_asking_to_solve_captcha}'. Found {first_page_body.text=}", error_cls=FailedLogin)
                 
                 picture = find_element(driver, "#ctl00_MainContent_imgSecNum")
                 captcha_src = picture.get_attribute("src")
@@ -112,18 +114,19 @@ class Loginner:
                 button_elem.click()
 
                 body_elem = find_element(driver, "body")
-                if "Символы с картинки введены не правильно. Пожалуйста, повторите попытку" not in body_elem.text:
+                if text_telling_captcha_was_answered_incorrectly not in body_elem.text:
                     break
             else:
                 logger.panic(
-                    f"Символы с картинки введены не правильно. Пожалуйста, повторите попытку, "
+                    f"{text_telling_captcha_was_answered_incorrectly}, "
                     f"failed {settings.SELENIUM_ATTEMPTS_SOLVING_CATPCHA} times", error_cls=FailedLogin
                 )
 
             # ====================== Second page =======================
             body_elem = find_element(driver, "body")
-            if "Для проверки наличия свободного времени" not in body_elem.text:
-                logger.panic(f"expected to find 'Для проверки наличия свободного времени' at second page, found {body_elem.text=}", error_cls=FailedLogin)
+            text_asking_to_check_free_time = "Для проверки наличия свободного времени"
+            if text_asking_to_check_free_time not in body_elem.text:
+                logger.panic(f"expected to find '{text_asking_to_check_free_time}' at second page, found {body_elem.text=}", error_cls=FailedLogin)
 
             button_elem = find_element(driver, "#ctl00_MainContent_ButtonB")
             button_elem.click()
@@ -131,8 +134,10 @@ class Loginner:
             # ====================== Third page =======================
             body_elem = find_element(driver, "body")
             
-            if "записи нет свободного времени" in body_elem.text:
-                logger.debug("записи нет свободного времени OK")
+            text_no_free_time_is_found = "записи нет свободного времени"
+            if text_no_free_time_is_found in body_elem.text:
+                logger.debug(text_no_free_time_is_found)
                 return
 
+            # 🎉
             logger.info("THERE IS FREE AVAILABLE TIME!!!!!!!")
