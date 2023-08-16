@@ -21,6 +21,8 @@ class RecognitionError(exceptions.PeasantException):
 class RecognitionNotStrError(RecognitionError):
     pass
 
+def sum_of_squares(point: list[float]) -> float:
+    return point[0]*point[0] + point[1]*point[1]
 
 class captchaSolver:
     def __init__(self, captcha_filepath: pathlib.Path):
@@ -29,19 +31,21 @@ class captchaSolver:
 
     def run(self) -> str:
         captcha_abs_path = str(self.project_path / self.captcha_filepath)
-        img: np.ndarray = cv2.imread(captcha_abs_path)
-
-        captcha_result = self.bypassCaptcha(img)
+        
+        captcha_result = self.bypassCaptcha(captcha_abs_path)
 
         allowed_symbols = "0123456789"
 
-        result_array = []
+        result_array: list[str] = []
 
         for character in captcha_result:
             if character not in allowed_symbols:
                 continue
 
             result_array.append(character)
+
+            if len(result_array) == 6:
+                break
 
         if len(result_array) != 6:
             logger.panic(
@@ -50,22 +54,51 @@ class captchaSolver:
 
         return "".join(result_array)
 
-    def bypassCaptcha(self, img: np.ndarray) -> str:
+    def bypassCaptcha(self, captcha_abs_path: str) -> str:
+        img: np.ndarray = cv2.imread(captcha_abs_path)
         out = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-
-        out = cv2.medianBlur(out, 3)
-
-        filter_threshold = 230
+        out = cv2.medianBlur(out, 5)
+        filter_threshold = 220
         a = np.where(out > filter_threshold, 1, out)
         out = np.where(a != 1, 0, a)
-
         out = self.removeIsland(out, 5)
-
         out = cv2.medianBlur(out, 5)
+
+        # invert
+        # a = np.where(out > filter_threshold, 255, out)
+        # im = Image.fromarray(out * 255)
+        # Defining the end points of the image
+        # out = cv2.absdiff(out,1)
+
+        # Finding corners
+        # corners = cv2.goodFeaturesToTrack(out, 27, 0.01, 10)
+        # left_top_corner = np.array([200,50])
+        # left_bottom_corner = np.array([200,0])
+        # right_top_corner = np.array([0,50])
+        # right_bottom_corner = np.array([0,0])
+        # for corner in corners:
+        #     for pair in corner:
+        #         if sum_of_squares(pair - [0,0]) < sum_of_squares(left_top_corner - [0,0]):
+        #             left_top_corner = pair
+        #         if sum_of_squares(pair - [0,50]) < sum_of_squares(left_bottom_corner - [0,50]):
+        #             left_bottom_corner = pair
+        #         if sum_of_squares(pair - [200,0]) < sum_of_squares(right_top_corner - [200,0]):
+        #             right_top_corner = pair
+        #         if sum_of_squares(pair - [200,50]) < sum_of_squares(right_bottom_corner - [200,50]):
+        #             right_bottom_corner = pair                
+
+        # Perceptive transform
+        # pts1 = np.float32([[22,11],[22,33],[142,6],[163,37]]) # type: ignore
+        # pts1 = np.float32([left_top_corner,left_bottom_corner,right_top_corner,right_bottom_corner]) # type: ignore
+        # pts2 = np.float32([[22,11],[22,33],[160,11],[160,33]]) # type: ignore
+        # M = cv2.getPerspectiveTransform(pts1,pts2)
+        # dst = cv2.warpPerspective(out,M,(200,50))
+        # out2 = dst.copy()
+        # out = np.where(out > filter_threshold, 1, out)
+        # out = cv2.absdiff(out,1)
 
         im = Image.fromarray(out * 255)
         im.save(str(self.project_path / "processed.jpeg"))
-
         out_captcha = pytesseract.image_to_string(im)
 
         if not isinstance(out_captcha, str):
