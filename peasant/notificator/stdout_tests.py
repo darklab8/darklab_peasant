@@ -3,6 +3,7 @@ import logging
 import pytest
 from peasant import exceptions
 
+
 def test_loggus(caplog) -> None:  # type: ignore
     caplog.set_level(logging.DEBUG)
 

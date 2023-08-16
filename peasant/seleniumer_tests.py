@@ -10,6 +10,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from . import types
 
+
 def test_opening_example() -> None:
     with open_browser() as driver:
         driver.get("https://example.com/")

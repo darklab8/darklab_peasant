@@ -10,14 +10,19 @@ logger = StdoutNotificator()
 def send_msg(webhook: types.DiscordWebhookUrl, msg: str) -> None:
     request_timeout = 10
     if settings.DEBUG:
-        resp = requests.post(url=webhook, json=dict(content=msg), timeout=request_timeout)
+        resp = requests.post(
+            url=webhook, json=dict(content=msg), timeout=request_timeout
+        )
     else:
         with suppress(Exception):
-            resp = requests.post(url=webhook, json=dict(content=msg), timeout=request_timeout)
+            resp = requests.post(
+                url=webhook, json=dict(content=msg), timeout=request_timeout
+            )
 
     if resp.status_code != 204:
         logger.debug(f"{resp.text=}")
         UnhandledError("failed sending msg")
+
 
 class DiscordNotificator(Notificator):
     def debug(self, msg: str) -> None:
@@ -31,7 +36,12 @@ class DiscordNotificator(Notificator):
     def error(self, msg: str) -> None:
         send_msg(settings.DISCORD_CHANNEL_NEWS, format_msg(settings.LogLev.ERROR, msg))
 
-    def panic(self, msg: str, from_exc: Exception | None = None, error_cls: types.ExcType = exceptions.PanicException) -> None:
+    def panic(
+        self,
+        msg: str,
+        from_exc: Exception | None = None,
+        error_cls: types.ExcType = exceptions.PanicException,
+    ) -> None:
         send_msg(
             settings.DISCORD_CHANNEL_HEALTH, format_msg(settings.LogLev.ERROR, msg)
         )

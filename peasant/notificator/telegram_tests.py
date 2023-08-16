@@ -2,6 +2,7 @@ from .telegram import TelegramNotificator
 import pytest
 from peasant import exceptions
 
+
 def test_telegram() -> None:
     notif = TelegramNotificator()
 

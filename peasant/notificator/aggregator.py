@@ -5,6 +5,7 @@ from .discord import DiscordNotificator
 from contextlib import suppress
 from peasant import types, exceptions
 
+
 class NotificatorAggregator(Notificator):
     """
     sending msgs to Stdout/Discord/Telegram :smile:
@@ -24,14 +25,15 @@ class NotificatorAggregator(Notificator):
         for notificator in self._notificators:
             notificator.info(msg)
 
-    def panic(self, msg: str, from_exc: Exception | None = None, error_cls: types.ExcType = exceptions.PanicException) -> None:
-        
+    def panic(
+        self,
+        msg: str,
+        from_exc: Exception | None = None,
+        error_cls: types.ExcType = exceptions.PanicException,
+    ) -> None:
         for notificator in self._notificators:
             with suppress(exceptions.PanicException):
                 notificator.panic(msg)
         if from_exc is None:
             raise error_cls(msg)
         raise error_cls(msg) from from_exc
-
-        
-

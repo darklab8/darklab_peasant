@@ -23,9 +23,13 @@ class StdoutNotificator(Notificator):
     def error(self, msg: str) -> None:
         logging.error(msg)
 
-    def panic(self, msg: str, from_exc: Exception | None = None, error_cls: types.ExcType = exceptions.PanicException) -> None:
+    def panic(
+        self,
+        msg: str,
+        from_exc: Exception | None = None,
+        error_cls: types.ExcType = exceptions.PanicException,
+    ) -> None:
         logging.error(msg)
         if from_exc is None:
             raise error_cls(msg)
         raise error_cls(msg) from from_exc
-

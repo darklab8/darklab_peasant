@@ -43,7 +43,9 @@ class captchaSolver:
             result_array.append(character)
 
         if len(result_array) != 6:
-            logger.panic("Expected to see 6 digits in result", error_cls=RecognitionError)
+            logger.panic(
+                "Expected to see 6 digits in result", error_cls=RecognitionError
+            )
 
         return "".join(result_array)
 
@@ -66,7 +68,10 @@ class captchaSolver:
         out_captcha = pytesseract.image_to_string(im)
 
         if not isinstance(out_captcha, str):
-            logger.panic("captchaSolver: RecognitionNotStrError", error_cls=RecognitionNotStrError)
+            logger.panic(
+                "captchaSolver: RecognitionNotStrError",
+                error_cls=RecognitionNotStrError,
+            )
             raise RecognitionNotStrError()
 
         print(out_captcha)

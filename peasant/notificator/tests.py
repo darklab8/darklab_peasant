@@ -16,7 +16,9 @@ from _pytest.logging import LogCaptureFixture
         TelegramNotificator,
     ],
 )
-def test_notificator(notificator_cls: Type[Notificator], caplog: LogCaptureFixture) -> None:
+def test_notificator(
+    notificator_cls: Type[Notificator], caplog: LogCaptureFixture
+) -> None:
     caplog.set_level(logging.DEBUG)
     msgr = notificator_cls()
     msgr.debug("Health is OK")

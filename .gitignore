@@ -6,3 +6,4 @@ script_example.py
 .env.json
 celerybeat-schedule
 *.captcha
+.mypy_cache
