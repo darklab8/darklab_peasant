@@ -42,3 +42,4 @@ SELENIUM_AWAIT_TIME = types.Seconds(cfg.get_int("selenium_await_time", "30"))
 SELENIUM_ATTEMPTS_SOLVING_CATPCHA = cfg.get_int(
     "selenium_attempts_solving_captcha", "4"
 )
+SELENIUM_DELAY = types.Seconds(1)

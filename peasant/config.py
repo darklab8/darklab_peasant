@@ -3,6 +3,7 @@ from typing import NewType, Optional, Any
 import json
 import pathlib
 from contextlib import suppress
+from peasant import exceptions
 
 EnvVar = NewType("EnvVar", str)
 
@@ -10,7 +11,7 @@ project_path = pathlib.Path(__file__).parent.parent
 env_path = project_path / ".env.json"
 
 
-class ConfigException(Exception):
+class ConfigException(exceptions.PeasantException):
     pass
 
 

@@ -15,8 +15,10 @@ def send_msg(channel_id: types.TelegramChannelID, bot_message: str) -> Any:
     if settings.DEBUG:
         response = requests.get(url, params, timeout=request_timeout)
     else:
-        with suppress(Exception):
+        try:
             response = requests.get(url, params, timeout=request_timeout)
+        except Exception as err:
+            logger.error(f"telegram.send_msg error, {str(err)=}")
 
     logger.debug(f"{params=}, {response.text=}")
 

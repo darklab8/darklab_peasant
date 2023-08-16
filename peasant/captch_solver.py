@@ -6,6 +6,7 @@ import pathlib
 import cv2.typing
 from typing import TYPE_CHECKING, Any
 from .notificator import logger
+from peasant import exceptions
 
 if TYPE_CHECKING:
     from _typeshed import Incomplete
@@ -13,7 +14,7 @@ else:
     Incomplete = Any
 
 
-class RecognitionError(Exception):
+class RecognitionError(exceptions.PeasantException):
     pass
 
 
@@ -44,7 +45,7 @@ class captchaSolver:
 
         if len(result_array) != 6:
             logger.panic(
-                "Expected to see 6 digits in result", error_cls=RecognitionError
+                f"Expected to see 6 digits in result. {result_array=}", error_cls=RecognitionError
             )
 
         return "".join(result_array)

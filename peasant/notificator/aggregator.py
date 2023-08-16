@@ -32,8 +32,8 @@ class NotificatorAggregator(Notificator):
         error_cls: types.ExcType = exceptions.PanicException,
     ) -> None:
         for notificator in self._notificators:
-            with suppress(exceptions.PanicException):
-                notificator.panic(msg)
+            with suppress(error_cls):
+                notificator.panic(msg, from_exc=from_exc, error_cls=error_cls)
         if from_exc is None:
             raise error_cls(msg)
         raise error_cls(msg) from from_exc

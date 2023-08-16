@@ -19,7 +19,7 @@ def format_msg(log_level: types.LogLevel, msg: str) -> str:
     return f"f={Path(caller_path).name},t={datetime.utcnow()},l={log_level},m={msg}"
 
 
-class UnhandledError(Exception):
+class NotificationException(exceptions.PeasantException):
     pass
 
 

@@ -1,4 +1,4 @@
-from .shared import Notificator, UnhandledError, format_msg
+from .shared import Notificator, NotificationException, format_msg
 from peasant import settings, exceptions, types
 import requests
 from .stdout import StdoutNotificator
@@ -14,14 +14,16 @@ def send_msg(webhook: types.DiscordWebhookUrl, msg: str) -> None:
             url=webhook, json=dict(content=msg), timeout=request_timeout
         )
     else:
-        with suppress(Exception):
+        try:
             resp = requests.post(
                 url=webhook, json=dict(content=msg), timeout=request_timeout
             )
+        except Exception as err:
+            logger.error(f"discord.send_msg error, {str(err)=}")
 
     if resp.status_code != 204:
         logger.debug(f"{resp.text=}")
-        UnhandledError("failed sending msg")
+        NotificationException("failed sending msg")
 
 
 class DiscordNotificator(Notificator):
