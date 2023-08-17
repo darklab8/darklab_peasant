@@ -39,6 +39,7 @@ class ZeroDriver:
 def delay_between_actions() -> None:
     time.sleep(settings.SELENIUM_DELAY)
 
+
 class MyDriver:
     def __init__(self, driver: webdriver.Chrome) -> None:
         self.driver = driver
@@ -49,11 +50,12 @@ class MyDriver:
             elem = self.driver.find_element(By.CSS_SELECTOR, selector)
         except selenium.common.exceptions.NoSuchElementException:
             logger.panic(
-                f"not found expected element by {selector=}", error_cls=FailedLoginException
+                f"not found expected element by {selector=}",
+                error_cls=FailedLoginException,
             )
 
         return elem
-    
+
     def get(self, url: types.SeleniumLink) -> None:
         self.driver.get(url)
         delay_between_actions()
@@ -65,6 +67,7 @@ class MyDriver:
     @property
     def title(self) -> str:
         return self.driver.title
+
 
 @contextmanager
 def open_browser(
@@ -89,6 +92,7 @@ def open_browser(
     finally:
         logger.debug("exited browser")
         driver.quit()
+
 
 class Loginner:
     def __init__(self, url: types.GovRegistryLink):

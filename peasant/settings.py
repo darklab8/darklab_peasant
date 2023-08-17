@@ -43,3 +43,5 @@ SELENIUM_ATTEMPTS_SOLVING_CATPCHA = cfg.get_int(
     "selenium_attempts_solving_captcha", "4"
 )
 SELENIUM_DELAY = types.Seconds(1)
+
+TWOCAPTCHA_API_KEY = cfg.get_str("twocaptcha_api_key")

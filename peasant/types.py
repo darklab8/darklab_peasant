@@ -9,5 +9,6 @@ LogLevel = NewType("LogLevel", str)
 SeleniumLink = NewType("SeleniumLink", str)
 GovRegistryLink = NewType("GovRegistryLink", SeleniumLink)
 Seconds = NewType("Seconds", int)
+TwoCatpchaApiKey = NewType("TwoCatpchaApiKey", str)
 
 ExcType = Type[Exception]

@@ -5,7 +5,7 @@
             "name": "Pytest",
             "type": "python",
             "request": "launch",
-            // "module": "pytest",
+            "module": "pytest",
             "console": "integratedTerminal",
             "purpose": ["debug-test"],
             "env": {
