@@ -4,7 +4,7 @@ import requests
 import time
 import base64
 from peasant.settings import Settings
-from .notificator.aggregator import Notificator, NotificatorAggregator
+from .notificator.aggregator import iNotificator, NotificatorAggregator
 
 # import cv2
 # import numpy as np
@@ -37,7 +37,7 @@ class captchaSolver:
         self.settings = settings
         self.project_path: pathlib.Path = pathlib.Path(__file__).parent.parent
         self.captcha_filepath = captcha_filepath
-        self.logger: Notificator = NotificatorAggregator(settings=settings)
+        self.logger: iNotificator = NotificatorAggregator(settings=settings)
 
     def run(self) -> str:
         captcha_abs_path = str(self.project_path / self.captcha_filepath)
@@ -56,10 +56,9 @@ class captchaSolver:
             ),
         )
         if not "OK" in resp.text:
-            self.logger.panic(
-                f"Post request is not having ok. {resp.text=}",
-                error_cls=RecognitionError,
-            )
+            panic_msg = f"Post request is not having ok. {resp.text=}"
+            self.logger.panic(panic_msg)
+            raise RecognitionError(panic_msg)
 
         request_id = resp.text.split("|")[1]
         for i in range(15):
@@ -77,8 +76,10 @@ class captchaSolver:
                 continue
 
             break
-        else:
-            self.logger.panic(f"Captcha is not solved.", error_cls=RecognitionError)
+        else:  
+            panic_msg = "Captcha is not solved"
+            self.logger.panic(panic_msg)
+            raise RecognitionError(panic_msg)
 
         captcha_result = resp2.text.split("|")[1]
         return captcha_result

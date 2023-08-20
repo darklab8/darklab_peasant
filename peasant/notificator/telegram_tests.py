@@ -9,5 +9,6 @@ def test_telegram(settings: Settings) -> None:
 
     notif.debug("debugging msg")
     notif.info("Good news, everyone!")
-    with pytest.raises(exceptions.PanicException):
-        notif.panic("smth bad happened!")
+    notif.panic('f=lambda_function.py,t=2023-08-20 04:52:53.158158,l=PANIC,m=')
+
+    

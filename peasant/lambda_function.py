@@ -4,22 +4,20 @@ Lambda handler
 from .settings import Settings
 from .seleniumer import Loginner
 from typing import Any
+from peasant.notificator.aggregator import NotificatorAggregator
+
 
 def handler(event: dict[str, Any], context: Any) -> str:
     settings = Settings(**event)
 
+    logger = NotificatorAggregator(settings=settings)
     if settings.test_mode:
-        return "Test is made succesfully"
+        msg_test_success = "Test is made succesfully"
+        logger.debug(msg_test_success)
+        return msg_test_success
 
     Loginner(settings=settings).login()
 
-    return 'Lambda is executed succesfully'
-
-# if __name__=="__main__":
-#     import pathlib
-#     import json
-#     with open(str(pathlib.Path(__file__).parent.parent / ".env.json")) as file:
-#         data = file.read()
-#     print(handler(event=json.loads(data), context = None))
-
-    
+    msg_lambda_success = 'Lambda is executed succesfully'
+    logger.debug(msg_lambda_success)
+    return msg_lambda_success

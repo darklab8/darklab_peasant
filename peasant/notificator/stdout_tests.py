@@ -12,5 +12,4 @@ def test_loggus(caplog, settings: Settings) -> None:  # type: ignore
 
     notif.debug("debugging msg")
     notif.info("Good news, everyone!")
-    with pytest.raises(exceptions.PanicException):
-        notif.panic("smth bad happened!")
+    notif.panic("smth bad happened!")

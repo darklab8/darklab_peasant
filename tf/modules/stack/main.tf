@@ -13,18 +13,21 @@ module "lambda" {
   timeout         = 60 * 2 # 2 minutes
   image_tag       = local.image_tag
   repository_url  = module.ecr.repository_url
+  memory_size     = 3008
+}
+
+data "aws_ssm_parameter" "config" {
+  name = "/terraform/${var.environment}/pesant"
 }
 
 locals {
-  image_tag = "0.0.0"
-  lambda_input = {
-
-  }
+  image_tag = "0.11"
+  lambda_input = jsondecode(data.aws_ssm_parameter.config.value)
 }
 
 resource "aws_lambda_invocation" "first_init" {
   function_name = module.lambda.function_name
-  input         = jsonencode(local.lambda_input)
+  input         = jsonencode(merge(local.lambda_input, {test_mode = false}))
 }
 
 locals {
@@ -36,11 +39,11 @@ locals {
   ]
 }
 
-module "schedule" {
-  count        = length(local.schedules)
-  source       = "../lambda_schedule"
-  function     = module.lambda.function
-  lambda_input = jsonencode(local.lambda_input)
-  schedule     = local.schedules[count.index]
-  event_name   = "${module.lambda.function.function_name}-schedule-${count.index}"
-}
+# module "schedule" {
+#   count        = length(local.schedules)
+#   source       = "../lambda_schedule"
+#   function     = module.lambda.function
+#   lambda_input = jsonencode(local.lambda_input)
+#   schedule     = local.schedules[count.index]
+#   event_name   = "${module.lambda.function.function_name}-schedule-${count.index}"
+# }

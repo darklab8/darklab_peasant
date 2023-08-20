@@ -20,12 +20,13 @@ ARG FUNCTION_DIR
 RUN pip install awslambdaric
 
 WORKDIR /code
+RUN mkdir -p docker/chromedriver
+COPY docker/chromedriver/114.0.5735.90 docker/chromedriver/114.0.5735.90
+
 COPY peasant peasant
 COPY data data
 COPY pytest.ini ./
 
-RUN mkdir -p docker/chromedriver
-COPY docker/chromedriver/114.0.5735.90 docker/chromedriver/114.0.5735.90
 
 # Set runtime interface client as default command for the container runtime
 ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]

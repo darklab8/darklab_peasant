@@ -2,7 +2,7 @@ import pytest
 from .discord import DiscordNotificator
 from .telegram import TelegramNotificator
 from .stdout import StdoutNotificator
-from .shared import Notificator
+from .shared import iNotificator
 from typing import Type
 import logging
 from _pytest.logging import LogCaptureFixture
@@ -18,8 +18,9 @@ from peasant.settings import Settings
     ],
 )
 def test_notificator(
-    notificator_cls: Type[Notificator], caplog: LogCaptureFixture, settings: Settings
+    notificator_cls: Type[iNotificator], caplog: LogCaptureFixture, settings: Settings
 ) -> None:
     caplog.set_level(logging.DEBUG)
     msgr = notificator_cls(settings=settings)  # type: ignore[call-arg]
     msgr.debug("Health is OK")
+    msgr.debug("Test is made succesfully")

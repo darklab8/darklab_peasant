@@ -1,7 +1,7 @@
 from celery import Celery
 from celery.schedules import crontab
 from typing import Any
-from .notificator.aggregator import NotificatorAggregator, Notificator
+from .notificator.aggregator import NotificatorAggregator, iNotificator
 from typing import NewType
 from pydantic import BaseModel, ConfigDict, Field
 from celery.signals import beat_init
@@ -61,6 +61,6 @@ def auto_purger(sender=None, headers=None, body=None, **kwargs):  # type: ignore
 @app.task
 def add(x: int, y: int) -> int:
     result = x + y
-    logger: Notificator = NotificatorAggregator(settings=settings)
+    logger: iNotificator = NotificatorAggregator(settings=settings)
     logger.debug(f"{result=}")
     return result

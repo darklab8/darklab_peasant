@@ -3,10 +3,9 @@ from datetime import datetime
 from peasant import types
 from pathlib import Path
 import inspect
-from typing import Optional
 from peasant import exceptions
 from peasant.settings import Settings
-
+from typing import Protocol
 
 def format_msg(log_level: types.LogLevel, msg: str) -> str:
     filenames = list([calling_file.filename for calling_file in inspect.stack()])
@@ -24,31 +23,13 @@ class NotificationException(exceptions.PeasantException):
     pass
 
 
-class Notificator(metaclass=ABCMeta):
+class iNotificator(Protocol):
+    def __init__(self, settings: Settings) -> None: ...
 
-    def __init__(self, settings: Settings) -> None:
-        self.settings = settings
+    def debug(self, msg: str) -> None: ...
 
-    @abstractmethod
-    def debug(self, msg: str) -> None:
-        """
-        Pinging and etc msgs
-        """
-        pass
+    def info(self, msg: str) -> None: ...
 
-    @abstractmethod
-    def info(self, msg: str) -> None:
-        """
-        Important msg users wish to see
-        """
+    def error(self, msg: str) -> None: ...
 
-    @abstractmethod
-    def panic(
-        self,
-        msg: str,
-        from_exc: Optional[Exception] = None,
-        error_cls: types.ExcType = exceptions.PanicException,
-    ) -> None:
-        """
-        Critical problems.
-        """
+    def panic(self, msg: str) -> None: ...

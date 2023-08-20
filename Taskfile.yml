@@ -4,7 +4,7 @@ env:
   AWS_ECR_REGION: eu-west-1
   AWS_ECR_ACCOUNT_ID: 286101979574
   APP_NAME: peasant
-  APP_VERSION: 0.0.1
+  APP_VERSION: 0.11
   AWS_ECR_REPO: peasant
 
 tasks:
