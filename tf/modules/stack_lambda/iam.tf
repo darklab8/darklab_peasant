@@ -1,5 +1,5 @@
 module "role" {
-  source = "../lambda_role"
+  source = "./lambda_role"
   name   = local.name
 }
 

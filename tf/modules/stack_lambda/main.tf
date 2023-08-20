@@ -1,10 +1,5 @@
-module "ecr" {
-  source = "../ecr"
-  name   = local.name
-}
-
 module "lambda" {
-  source          = "../lambda_docker"
+  source          = "./lambda_docker"
   environment     = var.environment
   module_path     = path.module
   lambda_name     = local.name
@@ -12,7 +7,7 @@ module "lambda" {
   description     = "Creates health check for document submitting"
   timeout         = 60 * 2 # 2 minutes
   image_tag       = local.image_tag
-  repository_url  = module.ecr.repository_url
+  repository_url  = var.ecr.repository_url
   memory_size     = 3008
 }
 
@@ -39,11 +34,11 @@ locals {
   ]
 }
 
-# module "schedule" {
-#   count        = length(local.schedules)
-#   source       = "../lambda_schedule"
-#   function     = module.lambda.function
-#   lambda_input = jsonencode(local.lambda_input)
-#   schedule     = local.schedules[count.index]
-#   event_name   = "${module.lambda.function.function_name}-schedule-${count.index}"
-# }
+module "schedule" {
+  count        = length(local.schedules)
+  source       = "../lambda_schedule"
+  function     = module.lambda.function
+  lambda_input = jsonencode(local.lambda_input)
+  schedule     = local.schedules[count.index]
+  event_name   = "${module.lambda.function.function_name}-schedule-${count.index}"
+}

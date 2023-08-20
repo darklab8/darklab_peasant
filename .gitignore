@@ -8,3 +8,4 @@ celerybeat-schedule
 *.captcha
 .mypy_cache
 .terraform
+geckodriver.log
