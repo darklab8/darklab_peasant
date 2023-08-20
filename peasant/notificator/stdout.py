@@ -1,19 +1,22 @@
 import logging
 from .shared import Notificator
-from peasant import settings, types, exceptions
+from peasant import types, exceptions
+from peasant.settings import Settings
 
-logging.basicConfig(
-    format="f=%(pathname)s,t=%(asctime)s,l=%(levelname)s,m=%(message)s",
-    encoding="utf-8",
-    level={
-        "DEBUG": logging.DEBUG,
-        "INFO": logging.INFO,
-        "ERROR": logging.ERROR,
-    }[settings.LOG_LEVEL],
+class StdoutNotificator(Notificator):
+    def __init__(self, settings: Settings) -> None:
+        super().__init__(settings=settings)
+        logging.basicConfig(
+            format="f=%(pathname)s,t=%(asctime)s,l=%(levelname)s,m=%(message)s",
+            encoding="utf-8",
+            level={
+                "DEBUG": logging.DEBUG,
+                "INFO": logging.INFO,
+                "ERROR": logging.ERROR,
+            }[self.settings.log_level],
 )
 
 
-class StdoutNotificator(Notificator):
     def debug(self, msg: str) -> None:
         logging.debug(msg)
 

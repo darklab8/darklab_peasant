@@ -12,3 +12,13 @@ Seconds = NewType("Seconds", int)
 TwoCatpchaApiKey = NewType("TwoCatpchaApiKey", str)
 
 ExcType = Type[Exception]
+
+class LogLev:
+    """
+    Change to Enum later :smile:
+    """
+
+    DEBUG = LogLevel("DEBUG")
+    INFO = LogLevel("INFO")
+    ERROR = LogLevel("ERROR")
+    PANIC = LogLevel("PANIC")

@@ -1,18 +1,12 @@
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from .seleniumer import Loginner, open_browser
+from .seleniumer import Loginner
 import pytest
 import os
-from . import settings
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from . import types
+from .settings import Settings
 
 
-def test_opening_example() -> None:
-    with open_browser() as driver:
+def test_opening_example(settings: Settings) -> None:
+    with Loginner(settings=settings).open_browser() as driver: # type: ignore[call-arg]
         driver.get(types.SeleniumLink("https://example.com/"))
         assert "Example Domain" in driver.title
 
@@ -31,5 +25,5 @@ def test_opening_example() -> None:
     reason="You get banned if u ran this more than 24 times per day",
 )
 @pytest.mark.allow_visual_debug_only
-def test_check_queue() -> None:
-    Loginner(url=settings.SELENIUM_REG_LINK).login()
+def test_check_queue(settings: Settings) -> None:
+    Loginner(settings=settings).login()  # type: ignore[call-arg]

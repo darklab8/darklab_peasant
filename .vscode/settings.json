@@ -5,10 +5,11 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "mypy.targets": [
-        ".",
+        "peasant",
     ],
-    "mypy.dmypyExecutable": "venv/bin/dmypy",
+    "mypy.dmypyExecutable": "${workspaceFolder}/venv/bin/dmypy",
     "terminal.integrated.env.linux": {
         // your env vars :)
+        // copy paste content from .env.json
     },
 }

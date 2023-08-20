@@ -5,6 +5,7 @@ from pathlib import Path
 import inspect
 from typing import Optional
 from peasant import exceptions
+from peasant.settings import Settings
 
 
 def format_msg(log_level: types.LogLevel, msg: str) -> str:
@@ -24,6 +25,10 @@ class NotificationException(exceptions.PeasantException):
 
 
 class Notificator(metaclass=ABCMeta):
+
+    def __init__(self, settings: Settings) -> None:
+        self.settings = settings
+
     @abstractmethod
     def debug(self, msg: str) -> None:
         """

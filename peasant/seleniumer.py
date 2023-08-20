@@ -5,16 +5,17 @@ from selenium.webdriver.common.by import By
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Generator
-from . import settings
+
 import secrets
 from . import captch_solver
-from .notificator import logger
 import selenium.common.exceptions
 from selenium.webdriver.remote.webelement import WebElement
 from . import types
 from . import exceptions
 import os
 import time
+from .notificator.aggregator import Notificator, NotificatorAggregator
+from peasant.settings import Settings
 
 headless_options = Options()
 # You comment the next 3 lines to debug if there is any issue
@@ -35,21 +36,24 @@ class ZeroDriver:
     def quit(self) -> None:
         pass
 
-
-def delay_between_actions() -> None:
-    time.sleep(settings.SELENIUM_DELAY)
-
+def delay_between_actions(delay: types.Seconds) -> None:
+    time.sleep(delay)
 
 class MyDriver:
-    def __init__(self, driver: webdriver.Chrome) -> None:
+    def __init__(self, driver: webdriver.Chrome, settings: Settings) -> None:
+        self.settings = settings
         self.driver = driver
+        self.logger: Notificator = NotificatorAggregator(settings=self.settings)
 
+    def delay_between_actions(self) -> None:
+        delay_between_actions(self.settings.selenium_delay)
+    
     def find_element(self, selector: str) -> WebElement:
         try:
-            delay_between_actions()
+            self.delay_between_actions()
             elem = self.driver.find_element(By.CSS_SELECTOR, selector)
         except selenium.common.exceptions.NoSuchElementException:
-            logger.panic(
+            self.logger.panic(
                 f"not found expected element by {selector=}",
                 error_cls=FailedLoginException,
             )
@@ -58,54 +62,57 @@ class MyDriver:
 
     def get(self, url: types.SeleniumLink) -> None:
         self.driver.get(url)
-        delay_between_actions()
+        self.delay_between_actions()
 
     def refresh(self) -> None:
         self.driver.refresh()
-        delay_between_actions()
+        self.delay_between_actions()
 
     @property
     def title(self) -> str:
         return self.driver.title
 
 
-@contextmanager
-def open_browser(
-    awaited: types.Seconds = settings.SELENIUM_AWAIT_TIME,
-) -> Generator[MyDriver, None, None]:
-    chorme_driver_path = (
-        Path(__file__).parent.parent
-        / "docker"
-        / "chromedriver"
-        / settings.DRIVER_VERSION
-    )
-    chrome_options = headless_options if not settings.DEBUG else Options()
-    service = Service(executable_path=chorme_driver_path)
-    driver: webdriver.Chrome | ZeroDriver = ZeroDriver()
-    try:
-        driver = webdriver.Chrome(service=service, options=chrome_options)
-        driver.implicitly_wait(awaited)
-        logger.debug("opened browser")
-        yield MyDriver(driver=driver)
-    except Exception as err:
-        raise FailedOpenBrowser() from err
-    finally:
-        logger.debug("exited browser")
-        driver.quit()
-
 
 class Loginner:
-    def __init__(self, url: types.GovRegistryLink):
-        self.url = url
+    def __init__(self, settings: Settings) -> None:
+        self.settings = settings
+        self.url = self.settings.selenium_reg_link
+        self.logger = NotificatorAggregator(settings=settings)
+
+    @contextmanager
+    def open_browser(self) -> Generator[MyDriver, None, None]:
+        chorme_driver_path = (
+            Path(__file__).parent.parent
+            / "docker"
+            / "chromedriver"
+            / self.settings.driver_version
+        )
+        chrome_options = headless_options if not self.settings.debug else Options()
+        service = Service(executable_path=chorme_driver_path)
+        driver: webdriver.Chrome | ZeroDriver = ZeroDriver()
+        try:
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            driver.implicitly_wait(self.settings.selenium_await_time)
+            self.logger.debug("opened browser")
+            yield MyDriver(driver=driver, settings=self.settings)
+        except Exception as err:
+            raise FailedOpenBrowser() from err
+        finally:
+            self.logger.debug("exited browser")
+            driver.quit()
 
     def login(self) -> None:
         try:
             self._login()
         except Exception as exc:
-            logger.panic(str(exc), from_exc=exc)
+            self.logger.panic(str(exc), from_exc=exc)
+
+    def delay_between_actions(self) -> None:
+        delay_between_actions(self.settings.selenium_delay)
 
     def _login(self) -> None:
-        with open_browser() as driver:
+        with self.open_browser() as driver:
             driver.get(self.url)
 
             # ====================== First page =======================
@@ -113,11 +120,11 @@ class Loginner:
             text_telling_captcha_was_answered_incorrectly = (
                 "Символы с картинки введены не правильно. Пожалуйста, повторите попытку"
             )
-            for _ in range(settings.SELENIUM_ATTEMPTS_SOLVING_CATPCHA):
+            for _ in range(self.settings.selenium_attempts_solving_captcha):
                 first_page_body = driver.find_element("body")
 
                 if text_asking_to_solve_captcha not in first_page_body.text:
-                    logger.panic(
+                    self.logger.panic(
                         f"expected to find '{text_asking_to_solve_captcha}'. Found {first_page_body.text=}",
                         error_cls=FailedLoginException,
                     )
@@ -126,7 +133,7 @@ class Loginner:
                 captcha_src = picture.get_attribute("src")
 
                 if captcha_src is None:
-                    logger.panic(
+                    self.logger.panic(
                         "Expected to find src attribute in captcha element",
                         error_cls=FailedLoginException,
                     )
@@ -137,7 +144,7 @@ class Loginner:
                     with open(captcha_path, "wb") as file:
                         file.write(picture.screenshot_as_png)
 
-                    captcha_result = captch_solver.captchaSolver(captcha_path).run()
+                    captcha_result = captch_solver.captchaSolver(captcha_path, settings=self.settings).run()
                 except captch_solver.RecognitionError:
                     driver.refresh()
                     continue
@@ -147,9 +154,9 @@ class Loginner:
                 input_elem = driver.find_element("#ctl00_MainContent_txtCode")
 
                 input_elem.clear()
-                delay_between_actions()
+                self.delay_between_actions()
                 input_elem.send_keys(captcha_result)
-                delay_between_actions()
+                self.delay_between_actions()
 
                 button_elem = driver.find_element("#ctl00_MainContent_ButtonA")
 
@@ -159,9 +166,9 @@ class Loginner:
                 if text_telling_captcha_was_answered_incorrectly not in body_elem.text:
                     break
             else:
-                logger.panic(
+                self.logger.panic(
                     f"{text_telling_captcha_was_answered_incorrectly}, "
-                    f"failed {settings.SELENIUM_ATTEMPTS_SOLVING_CATPCHA} times",
+                    f"failed {self.settings.selenium_attempts_solving_captcha} times",
                     error_cls=FailedLoginException,
                 )
 
@@ -169,7 +176,7 @@ class Loginner:
             body_elem = driver.find_element("body")
             text_asking_to_check_free_time = "Для проверки наличия свободного времени"
             if text_asking_to_check_free_time not in body_elem.text:
-                logger.panic(
+                self.logger.panic(
                     f"expected to find '{text_asking_to_check_free_time}' at second page, found {body_elem.text=}",
                     error_cls=FailedLoginException,
                 )
@@ -182,8 +189,8 @@ class Loginner:
 
             text_no_free_time_is_found = "записи нет свободного времени"
             if text_no_free_time_is_found in body_elem.text:
-                logger.debug(text_no_free_time_is_found)
+                self.logger.debug(text_no_free_time_is_found)
                 return
 
             # 🎉
-            logger.info("THERE IS FREE AVAILABLE TIME!!!!!!!")
+            self.logger.info("THERE IS FREE AVAILABLE TIME!!!!!!!")

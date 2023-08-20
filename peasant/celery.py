@@ -1,16 +1,17 @@
 from celery import Celery
 from celery.schedules import crontab
-from celery.app.base import Celery as CeleryApp
 from typing import Any
-from . import settings
-from .notificator import logger
+from .notificator.aggregator import NotificatorAggregator, Notificator
 from typing import NewType
 from pydantic import BaseModel, ConfigDict, Field
 from celery.signals import beat_init
+from peasant.settings import Settings
+
+settings = Settings() # type: ignore[call-arg]
 
 app = Celery("peasant")
-app.conf.broker_url = settings.REDIS_HOST
-app.conf.result_backend = settings.REDIS_HOST
+app.conf.broker_url = settings.celery_redis_host
+app.conf.result_backend = settings.celery_redis_host
 app.conf.broker_connection_retry_on_startup = True
 app.conf.beat_max_loop_interval = 10
 
@@ -60,5 +61,6 @@ def auto_purger(sender=None, headers=None, body=None, **kwargs):  # type: ignore
 @app.task
 def add(x: int, y: int) -> int:
     result = x + y
+    logger: Notificator = NotificatorAggregator(settings=settings)
     logger.debug(f"{result=}")
     return result

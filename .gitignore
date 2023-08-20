@@ -7,3 +7,4 @@ script_example.py
 celerybeat-schedule
 *.captcha
 .mypy_cache
+.terraform

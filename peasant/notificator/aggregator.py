@@ -4,6 +4,7 @@ from .telegram import TelegramNotificator
 from .discord import DiscordNotificator
 from contextlib import suppress
 from peasant import types, exceptions
+from peasant.settings import Settings
 
 
 class NotificatorAggregator(Notificator):
@@ -11,11 +12,12 @@ class NotificatorAggregator(Notificator):
     sending msgs to Stdout/Discord/Telegram :smile:
     """
 
-    def __init__(self) -> None:
+    def __init__(self, settings: Settings) -> None:
+        self.settings = settings
         self._notificators: list[Notificator] = []
-        self._notificators.append(StdoutNotificator())
-        self._notificators.append(TelegramNotificator())
-        self._notificators.append(DiscordNotificator())
+        self._notificators.append(StdoutNotificator(settings=settings))
+        self._notificators.append(TelegramNotificator(settings=settings))
+        self._notificators.append(DiscordNotificator(settings=settings))
 
     def debug(self, msg: str) -> None:
         for notificator in self._notificators:

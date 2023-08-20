@@ -3,8 +3,8 @@ from peasant import exceptions
 import requests
 import time
 import base64
-from peasant import settings
-from .notificator import logger
+from peasant.settings import Settings
+from .notificator.aggregator import Notificator, NotificatorAggregator
 
 # import cv2
 # import numpy as np
@@ -33,9 +33,11 @@ class RecognitionNotStrError(RecognitionError):
 
 
 class captchaSolver:
-    def __init__(self, captcha_filepath: pathlib.Path):
+    def __init__(self, captcha_filepath: pathlib.Path, settings: Settings):
+        self.settings = settings
         self.project_path: pathlib.Path = pathlib.Path(__file__).parent.parent
         self.captcha_filepath = captcha_filepath
+        self.logger: Notificator = NotificatorAggregator(settings=settings)
 
     def run(self) -> str:
         captcha_abs_path = str(self.project_path / self.captcha_filepath)
@@ -45,7 +47,7 @@ class captchaSolver:
         resp = requests.post(
             url="http://2captcha.com/in.php",
             json=dict(
-                key=settings.TWOCAPTCHA_API_KEY,
+                key=self.settings.twocaptcha_api_key,
                 body=encoded_image.decode("utf8"),
                 method="base64",
                 min_len=6,
@@ -54,7 +56,7 @@ class captchaSolver:
             ),
         )
         if not "OK" in resp.text:
-            logger.panic(
+            self.logger.panic(
                 f"Post request is not having ok. {resp.text=}",
                 error_cls=RecognitionError,
             )
@@ -64,7 +66,7 @@ class captchaSolver:
             resp2 = requests.get(
                 f"http://2captcha.com/res.php",
                 params=dict(
-                    key=settings.TWOCAPTCHA_API_KEY,
+                    key=self.settings.twocaptcha_api_key,
                     action="get",
                     id=request_id,
                 ),
@@ -76,7 +78,7 @@ class captchaSolver:
 
             break
         else:
-            logger.panic(f"Captcha is not solved.", error_cls=RecognitionError)
+            self.logger.panic(f"Captcha is not solved.", error_cls=RecognitionError)
 
         captcha_result = resp2.text.split("|")[1]
         return captcha_result

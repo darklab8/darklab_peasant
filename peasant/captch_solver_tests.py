@@ -1,8 +1,9 @@
 import pytest
-from .captch_solver import captchaSolver, RecognitionError
+from .captch_solver import captchaSolver
 import pathlib
+from .settings import Settings
 
-
+@pytest.mark.long_tests
 @pytest.mark.parametrize(
     "img_num,expected",
     [
@@ -21,7 +22,7 @@ import pathlib
         (13, 179106),
     ],
 )
-def test_captcha(img_num: int, expected: int) -> None:
+def test_captcha(img_num: int, expected: int, settings: Settings) -> None:
     picture_path = pathlib.Path("data") / f"CodeImage{img_num}.jpeg"
 
     # if img_num == 9:
@@ -34,5 +35,8 @@ def test_captcha(img_num: int, expected: int) -> None:
     #         result = captchaSolver(picture_path).run()
     #     return
 
-    result = captchaSolver(picture_path).run()
+    result = captchaSolver(
+        picture_path,
+        settings=settings, # type: ignore[call-arg]
+    ).run()
     assert result == str(expected)

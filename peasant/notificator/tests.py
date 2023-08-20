@@ -6,6 +6,7 @@ from .shared import Notificator
 from typing import Type
 import logging
 from _pytest.logging import LogCaptureFixture
+from peasant.settings import Settings
 
 
 @pytest.mark.parametrize(
@@ -17,8 +18,8 @@ from _pytest.logging import LogCaptureFixture
     ],
 )
 def test_notificator(
-    notificator_cls: Type[Notificator], caplog: LogCaptureFixture
+    notificator_cls: Type[Notificator], caplog: LogCaptureFixture, settings: Settings
 ) -> None:
     caplog.set_level(logging.DEBUG)
-    msgr = notificator_cls()
+    msgr = notificator_cls(settings=settings)  # type: ignore[call-arg]
     msgr.debug("Health is OK")

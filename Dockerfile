@@ -1,3 +1,6 @@
+# Define custom function directory
+ARG FUNCTION_DIR="/function"
+
 FROM python:3.10
 
 WORKDIR /install
@@ -12,6 +15,10 @@ RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/loc
 COPY requirements.txt constraints.txt ./
 RUN pip install -r requirements.txt -c constraints.txt
 
+# Include global arg in this stage of the build
+ARG FUNCTION_DIR
+RUN pip install awslambdaric
+
 WORKDIR /code
 COPY peasant peasant
 COPY data data
@@ -20,4 +27,7 @@ COPY pytest.ini ./
 RUN mkdir -p docker/chromedriver
 COPY docker/chromedriver/114.0.5735.90 docker/chromedriver/114.0.5735.90
 
-CMD [ "task celery:app" ]
+# Set runtime interface client as default command for the container runtime
+ENTRYPOINT [ "/usr/local/bin/python", "-m", "awslambdaric" ]
+# Pass the name of the function handler as an argument to the runtime
+CMD [ "peasant.lambda_function.handler" ]
