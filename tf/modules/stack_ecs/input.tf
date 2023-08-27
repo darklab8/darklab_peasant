@@ -6,8 +6,8 @@ variable "environment" {
   type = string
 }
 
-variable ecr {
-    type = object({
-        repository_url = string
-    })
+variable "ecr" {
+  type = object({
+    repository_url = string
+  })
 }

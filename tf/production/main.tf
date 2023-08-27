@@ -6,7 +6,7 @@ module "ecr" {
 module "stack_ecs" {
   source      = "../modules/stack_ecs"
   environment = "production"
-  ecr = module.ecr
+  ecr         = module.ecr
 }
 
 # not working due to Selenium Chrome not being launchable in AWS lambdas via docker

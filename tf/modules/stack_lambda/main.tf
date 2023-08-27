@@ -16,13 +16,13 @@ data "aws_ssm_parameter" "config" {
 }
 
 locals {
-  image_tag = "0.11"
+  image_tag    = "0.11"
   lambda_input = jsondecode(data.aws_ssm_parameter.config.value)
 }
 
 resource "aws_lambda_invocation" "first_init" {
   function_name = module.lambda.function_name
-  input         = jsonencode(merge(local.lambda_input, {test_mode = false}))
+  input         = jsonencode(merge(local.lambda_input, { test_mode = false }))
 }
 
 locals {
