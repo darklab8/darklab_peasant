@@ -7,9 +7,13 @@ output "redis_sg" {
 }
 
 output "pub_subnet" {
-  value = aws_subnet.pub_subnet
+  value = aws_subnet.public
 }
 
-output "pub_subnet2" {
-  value = aws_subnet.pub_subnet2
+output "private_subnet" {
+  value = aws_subnet.private
+}
+
+output "vpc" {
+  value = aws_vpc.vpc
 }

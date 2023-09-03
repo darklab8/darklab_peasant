@@ -6,6 +6,9 @@ variable "network" {
     pub_subnet = object({
       id = string
     })
+    private_subnet = object({
+      id = string
+    })    
   })
 }
 

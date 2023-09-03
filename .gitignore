@@ -9,3 +9,4 @@ celerybeat-schedule
 .mypy_cache
 .terraform
 geckodriver.log
+*.pem

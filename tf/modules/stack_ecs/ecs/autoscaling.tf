@@ -6,18 +6,21 @@ locals {
 
 resource "aws_launch_configuration" "ecs_launch_config" {
   # found here https://aws.amazon.com/marketplace/pp/prodview-do6i4ripwbhs2
-  image_id             = "ami-0c5cd894db560d66c" # free tier ECS optimized
+  image_id             = "ami-0557bea45bd2b776b" # "ami-0c5cd894db560d66c" # ECS optimized
   iam_instance_profile = aws_iam_instance_profile.ecs_agent.name
   security_groups      = [var.network.ecs_sg.id]
   user_data            = local.user_data
   instance_type        = "t2.micro"
 
+  # make it work without it :)
+  # associate_public_ip_address = true
+
   key_name                    = var.instance_key
 }
 
-resource "aws_autoscaling_group" "failure_analysis_ecs_asg" {
+resource "aws_autoscaling_group" "asg" {
   name                 = "asg"
-  vpc_zone_identifier  = [var.network.pub_subnet.id]
+  vpc_zone_identifier  = [var.network.private_subnet.id]
   launch_configuration = aws_launch_configuration.ecs_launch_config.name
 
   desired_capacity          = 1

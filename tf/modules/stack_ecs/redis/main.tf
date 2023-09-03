@@ -3,7 +3,7 @@ variable "network" {
     pub_subnet = object({
       id = string
     })
-    pub_subnet2 = object({
+    private_subnet = object({
       id = string
     })
     redis_sg = object({
@@ -17,7 +17,7 @@ variable "network" {
 
 resource "aws_elasticache_subnet_group" "main" {
   name       = "my-cache-subnet"
-  subnet_ids = [var.network.pub_subnet.id, var.network.pub_subnet2.id]
+  subnet_ids = [var.network.pub_subnet.id, var.network.private_subnet.id]
 }
 
 resource "aws_elasticache_cluster" "main" {

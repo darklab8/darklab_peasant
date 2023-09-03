@@ -7,13 +7,23 @@ module "ecs" {
   source      = "./ecs"
   network     = module.network
   environment = var.environment
-  instance_key   = aws_key_pair.bastion_key.key_name
+  instance_key   = module.bastion.key_name
 }
 
-module "redis" {
-  source  = "./redis"
+module "bastion" {
+  source  = "../bastion"
+  environment = var.environment
   network = module.network
 }
+output "bastion_private_key" {
+    value = module.bastion.bastion_private_key
+    sensitive = true
+}
+
+# module "redis" {
+#   source  = "./redis"
+#   network = module.network
+# }
 
 module "service_example" {
   source      = "./service"
